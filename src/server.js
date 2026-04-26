@@ -25,8 +25,20 @@ app.get('/notes/:noteId', (req, res) => {
   });
 });
 
+app.get('/test-error', () => {
+  throw new Error('Simulated server error');
+});
+
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.message);
+
+  res.status(500).json({
+    message: err.message,
+  });
 });
 
 app.listen(PORT, () => {
