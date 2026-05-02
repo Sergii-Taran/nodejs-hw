@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 
 import { logger } from './middleware/logger.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
@@ -13,10 +14,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(helmet());
 app.use(express.json());
 app.use(logger);
 
-app.use('/notes', notesRoutes);
+app.use(notesRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
