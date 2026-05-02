@@ -26,3 +26,13 @@ export const getNoteById = async (req, res, next) => {
     next(error);
   }
 };
+
+export const createNote = async (req, res, next) => {
+  try {
+    const newNote = await Note.create(req.body);
+
+    res.status(201).json(newNote);
+  } catch (error) {
+    next(error);
+  }
+};
