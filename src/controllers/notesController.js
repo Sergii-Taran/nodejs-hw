@@ -36,3 +36,19 @@ export const createNote = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteNote = async (req, res, next) => {
+  try {
+    const { noteId } = req.params;
+
+    const deletedNote = await Note.findByIdAndDelete(noteId);
+
+    if (!deletedNote) {
+      throw createHttpError(404, 'Note not found');
+    }
+
+    res.status(200).json(deletedNote);
+  } catch (error) {
+    next(error);
+  }
+};
