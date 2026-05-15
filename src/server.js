@@ -10,6 +10,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 
 import { connectMongoDB } from './db/connectMongoDB.js';
 import notesRoutes from './routes/notesRoutes.js';
+import authRouter from './routes/authRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use(logger);
 
 app.use(notesRoutes);
+app.use('/auth', authRouter);
 
 app.use(errors());
 
