@@ -12,11 +12,11 @@ import {
   loginUserSchema,
 } from '../validations/authValidation.js';
 
-const authRouter = Router();
+const router = Router();
 
-authRouter.post('/register', celebrate(registerUserSchema), registerUser);
-authRouter.post('/login', celebrate(loginUserSchema), loginUser);
-authRouter.post('/refresh', refreshUserSession);
-authRouter.post('/logout', logoutUser);
+router.post('/register', celebrate(registerUserSchema), registerUser);
+router.post('/login', celebrate(loginUserSchema), loginUser);
+router.post('/refresh', refreshUserSession);
+router.post('/logout', logoutUser);
 
-export default authRouter;
+export default router;

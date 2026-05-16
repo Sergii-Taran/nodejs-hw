@@ -6,12 +6,14 @@ const userSchema = new Schema(
       type: String,
       trim: true,
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
     },
+
     password: {
       type: String,
       required: true,
@@ -25,10 +27,10 @@ const userSchema = new Schema(
 );
 
 userSchema.methods.toJSON = function () {
-  const obj = this.toObject();
-  delete obj.password;
+  const user = this.toObject();
+  delete user.password;
 
-  return obj;
+  return user;
 };
 
 userSchema.pre('save', function () {
@@ -37,4 +39,4 @@ userSchema.pre('save', function () {
   }
 });
 
-export const User = model('User', userSchema);
+export const User = model('user', userSchema);

@@ -1,10 +1,16 @@
-import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
+import bcrypt from 'bcrypt';
 
 import { User } from '../models/user.js';
+import { Session } from '../models/session.js';
+
 import { createSession, setSessionCookies } from '../services/auth.js';
 
-import { Session } from '../models/session.js';
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+};
 
 export const registerUser = async (req, res) => {
   const { email, password } = req.body;
@@ -38,9 +44,9 @@ export const loginUser = async (req, res) => {
     throw createHttpError(401, 'Invalid credentials');
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isValidPassword = await bcrypt.compare(password, user.password);
 
-  if (!isPasswordValid) {
+  if (!isValidPassword) {
     throw createHttpError(401, 'Invalid credentials');
   }
 
@@ -56,6 +62,10 @@ export const loginUser = async (req, res) => {
 export const refreshUserSession = async (req, res) => {
   const { sessionId, refreshToken } = req.cookies;
 
+  if (!sessionId || !refreshToken) {
+    throw createHttpError(401, 'Missing session credentials');
+  }
+
   const session = await Session.findOne({
     _id: sessionId,
     refreshToken,
@@ -65,11 +75,19 @@ export const refreshUserSession = async (req, res) => {
     throw createHttpError(401, 'Session not found');
   }
 
-  if (new Date() > new Date(session.refreshTokenValidUntil)) {
+  const isSessionTokenExpired = session.refreshTokenValidUntil < new Date();
+
+  if (isSessionTokenExpired) {
+    await session.deleteOne();
+
+    res.clearCookie('sessionId', cookieOptions);
+    res.clearCookie('accessToken', cookieOptions);
+    res.clearCookie('refreshToken', cookieOptions);
+
     throw createHttpError(401, 'Session token expired');
   }
 
-  await Session.deleteOne({ _id: sessionId });
+  await session.deleteOne();
 
   const newSession = await createSession(session.userId);
 
@@ -87,9 +105,9 @@ export const logoutUser = async (req, res) => {
     await Session.deleteOne({ _id: sessionId });
   }
 
-  res.clearCookie('sessionId');
-  res.clearCookie('accessToken');
-  res.clearCookie('refreshToken');
+  res.clearCookie('sessionId', cookieOptions);
+  res.clearCookie('accessToken', cookieOptions);
+  res.clearCookie('refreshToken', cookieOptions);
 
-  res.sendStatus(204);
+  res.status(204).send();
 };
