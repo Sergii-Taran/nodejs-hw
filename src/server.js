@@ -24,7 +24,7 @@ app.use(cors());
 
 app.use(helmet());
 
-app.use('/auth', authRouter);
+app.use(authRouter);
 app.use(notesRoutes);
 
 app.use(errors());

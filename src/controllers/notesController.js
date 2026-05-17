@@ -104,7 +104,7 @@ export const updateNote = async (req, res, next) => {
       },
       req.body,
       {
-        new: true,
+        returnDocument: 'after',
       },
     );
 
