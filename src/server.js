@@ -11,6 +11,7 @@ import cookieParser from 'cookie-parser';
 
 import authRouter from './routes/authRoutes.js';
 import notesRoutes from './routes/notesRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 import helmet from 'helmet';
 
@@ -26,6 +27,7 @@ app.use(helmet());
 
 app.use(authRouter);
 app.use(notesRoutes);
+app.use(userRoutes);
 
 app.use(errors());
 app.use(notFoundHandler);
